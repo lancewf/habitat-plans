@@ -7,6 +7,7 @@ pkg_version="0.2.0"
 pkg_maintainer="Lance Finfrock <lfinfrock@chef.io>"
 pkg_license=('Apache-2.0')
 pkg_source=""
+pkg_upstream_url="https://github.com/lancewf/habitat-plans"
 
 pkg_svc_user=root
 pkg_svc_group=$pkg_svc_user
