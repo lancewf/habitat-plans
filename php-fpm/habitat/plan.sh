@@ -14,7 +14,7 @@ pkg_svc_group=$pkg_svc_user
 
 pkg_svc_run="php-fpm -y $pkg_svc_config_path/php-fpm.conf"
 
-pkg_deps=(core/php)
+pkg_deps=(core/php core/readline)
 
 pkg_exports=(
   [port]=port
