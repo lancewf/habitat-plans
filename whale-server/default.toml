@@ -33,3 +33,6 @@ keepalive_timeout = 60
 
 [money-checker-server]
   domain_name = "example.com"
+
+[wiki]
+  domain_name = "example.com"

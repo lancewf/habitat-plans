@@ -16,6 +16,7 @@ pkg_deps=(core/nginx)
 pkg_binds=(
   [mmsn]="port local_only"
   [money-checker-server]="port local_only"
+  [wiki]="port local_only"
 )
 
 do_build(){
