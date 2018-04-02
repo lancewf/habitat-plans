@@ -37,17 +37,20 @@ keepalive_timeout = 60
 [wiki]
   domain_name = "example3.com"
 
-[hawaii-alaska-whale-dis]
+[home-whale-dis]
   domain_name = "example4.com"
 
-[media-whale-dis]
+[hawaii-alaska-whale-dis]
   domain_name = "example5.com"
 
-[west-coast-whale-dis]
+[media-whale-dis]
   domain_name = "example6.com"
 
-[pacific-northwest-whale-dis]
+[west-coast-whale-dis]
   domain_name = "example7.com"
 
-[west-coast-training-whale-dis]
+[pacific-northwest-whale-dis]
   domain_name = "example8.com"
+
+[west-coast-training-whale-dis]
+  domain_name = "example9.com"

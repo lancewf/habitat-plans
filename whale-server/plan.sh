@@ -17,6 +17,7 @@ pkg_binds_optional=(
   [mmsn]="port local_only"
   [money-checker-server]="port local_only"
   [wiki]="port local_only"
+  [home-whale-dis]="port local_only"
   [hawaii-alaska-whale-dis]="port local_only"
   [media-whale-dis]="port local_only"
   [west-coast-whale-dis]="port local_only"
