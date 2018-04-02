@@ -29,10 +29,25 @@ keepalive_timeout = 60
   local_only = false
 
 [mmsn]
-  domain_name = "example.com"
+  domain_name = "example1.com"
 
 [money-checker-server]
-  domain_name = "example.com"
+  domain_name = "example2.com"
 
 [wiki]
-  domain_name = "example.com"
+  domain_name = "example3.com"
+
+[hawaii-alaska-whale-dis]
+  domain_name = "example4.com"
+
+[media-whale-dis]
+  domain_name = "example5.com"
+
+[west-coast-whale-dis]
+  domain_name = "example6.com"
+
+[pacific-northwest-whale-dis]
+  domain_name = "example7.com"
+
+[west-coast-training-whale-dis]
+  domain_name = "example8.com"

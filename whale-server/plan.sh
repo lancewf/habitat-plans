@@ -13,10 +13,15 @@ pkg_svc_group=$pkg_svc_user
 
 pkg_deps=(core/nginx)
 
-pkg_binds=(
+pkg_binds_optional=(
   [mmsn]="port local_only"
   [money-checker-server]="port local_only"
   [wiki]="port local_only"
+  [hawaii-alaska-whale-dis]="port local_only"
+  [media-whale-dis]="port local_only"
+  [west-coast-whale-dis]="port local_only"
+  [pacific-northwest-whale-dis]="port local_only"
+  [west-coast-training-whale-dis]="port local_only"
 )
 
 do_build(){
