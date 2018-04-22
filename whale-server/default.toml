@@ -54,3 +54,6 @@ keepalive_timeout = 60
 
 [west-coast-training-whale-dis]
   domain_name = "example9.com"
+
+[money_data_server]
+  domain_name = "example10.com"
