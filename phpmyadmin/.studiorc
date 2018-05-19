@@ -1,0 +1,74 @@
+hab pkg install chef/ci-studio-common >/dev/null
+source "$(hab pkg path chef/ci-studio-common)/bin/studio-common"
+
+# This removes the visual mode when select text with the mouse in vim. 
+echo "set mouse-=a" >> ~/.vimrc
+
+export PHPMYSQLADMIN_PORT=8080
+export PHP_PORT=9000
+export MYSQL_PORT=3306
+
+function start() {
+  install_if_missing core/busybox-static netstat;
+  netstat -an | grep $PHPMYSQLADMIN_PORT | grep LISTEN >/dev/null 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "phpMyAdmin is already running";
+    return;
+  fi
+
+  start_mysql
+
+  start_php
+
+  build
+
+  start_sup
+
+  mkdir -p /hab/user/phpMyAdmin/config/
+
+  printf "[http.listen]\nport = $PHPMYSQLADMIN_PORT\nbind = \'0.0.0.0\'\nlocal_only=true" > /hab/user/phpMyAdmin/config/user.toml
+  printf "\n[phpmyadmin]\nblowfish_secret=\'b+RN8}]s}T4>8rh4AG!Nko}W}e4K&=y6\'\nallow_no_password= true\n" >> /hab/user/phpMyAdmin/config/user.toml 
+  hab start $HAB_ORIGIN/phpMyAdmin --bind php:php.default --bind database:mysql.default
+
+  wait_or_fail_for_port_to_listen $PHPMYSQLADMIN_PORT
+}
+
+function start_mysql() {
+  install_if_missing core/busybox-static netstat;
+  netstat -an | grep $MYSQL_PORT | grep LISTEN >/dev/null 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "mysql is already running";
+    return;
+  fi
+
+  start_sup
+  
+  mkdir -p /hab/user/mysql/config/
+  printf "app_username=\'mysql_user\'\napp_password='9qQ921x7Kq'\nbind=\'127.0.0.1\'\nlocal_only=true\n" > /hab/user/mysql/config/user.toml 
+
+  hab start lancewf/mysql
+
+  wait_or_fail_for_port_to_listen $MYSQL_PORT
+}
+
+function start_php() {
+  install_if_missing core/busybox-static netstat;
+  netstat -an | grep $PHP_PORT | grep LISTEN >/dev/null 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "php is already running";
+    return;
+  fi
+
+  start_sup
+
+  mkdir -p /hab/user/php/config/
+
+  printf "port = $PHP_PORT\nlisten =\'127.0.0.1\'\nlocal_only=true" > /hab/user/php/config/user.toml 
+
+  hab start lancewf/php
+
+  wait_or_fail_for_port_to_listen $PHP_PORT
+}
+
+install_if_missing core/curl curl
+eval "$(curl -s -L https://gist.githubusercontent.com/lancewf/6b58d3accb36c2ae5681a40bd574b124/raw/345232f9fab0bb2892be15419bc5e644e55f0d9c/hab_studio_addition)"
