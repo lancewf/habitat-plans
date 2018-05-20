@@ -19,6 +19,11 @@ pkg_deps=(
   core/nginx
 )
 
+pkg_exports=(
+   [port]=http.listen.port
+   [local_only]=http.listen.local_only
+)
+
 pkg_binds=(
   [database]="port username password local_only"
   [php]="port local_only"
