@@ -1,0 +1,28 @@
+hab pkg install chef/ci-studio-common >/dev/null
+source "$(hab pkg path chef/ci-studio-common)/bin/studio-common"
+
+export REDIS_PORT=6379
+
+function start() {
+  install_if_missing core/busybox-static netstat;
+  netstat -an | grep $REDIS_PORT | grep LISTEN >/dev/null 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "redis is already running";
+    return;
+  fi
+
+  build
+
+  start_sup
+
+  mkdir -p /hab/user/redis/config/
+
+  printf "port = $REDIS_PORT\nlocal_only=true" > /hab/user/redis/config/user.toml
+
+  hab start $HAB_ORIGIN/redis
+
+  wait_or_fail_for_port_to_listen $REDIS_PORT
+}
+
+install_if_missing core/curl curl
+eval "$(curl -s -L https://gist.githubusercontent.com/lancewf/6b58d3accb36c2ae5681a40bd574b124/raw/345232f9fab0bb2892be15419bc5e644e55f0d9c/hab_studio_addition)"
