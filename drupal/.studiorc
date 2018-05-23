@@ -1,0 +1,87 @@
+hab pkg install chef/ci-studio-common >/dev/null
+source "$(hab pkg path chef/ci-studio-common)/bin/studio-common"
+
+export MYSQL_PORT=3306
+export DRUPAL_PORT=8080
+export PHP_PORT=9000
+
+function start() {
+  install_if_missing core/busybox-static netstat;
+  netstat -an | grep $DRUPAL_PORT | grep LISTEN >/dev/null 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "drupal is already running";
+    return;
+  fi
+
+  start_sup
+
+  start_mysql
+
+  start_php
+
+  build
+
+  mkdir -p /hab/user/drupal/config/
+  printf "[http.listen]\n" > /hab/user/drupal/config/user.toml
+  printf "port = $DRUPAL_PORT\n" >> /hab/user/drupal/config/user.toml
+  printf "bind ='0.0.0.0'\n" >> /hab/user/drupal/config/user.toml
+  printf "local_only=false\n" >> /hab/user/drupal/config/user.toml
+
+  hab start $HAB_ORIGIN/drupal --bind database:mysql.default --bind php:php.default
+
+  wait_or_fail_for_port_to_listen $DRUPAL_PORT
+}
+
+function start_php() {
+  install_if_missing core/busybox-static netstat;
+  netstat -an | grep $PHP_PORT | grep LISTEN >/dev/null 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "php is already running";
+    return;
+  fi
+
+  start_sup
+
+  mkdir -p /hab/user/php/config/
+  printf "port = $PHP_PORT\n" > /hab/user/php/config/user.toml
+  printf "listen ='127.0.0.1'\n" >> /hab/user/php/config/user.toml
+  printf "local_only=true\n" >> /hab/user/php/config/user.toml
+
+  hab start lancewf/php
+
+  wait_or_fail_for_port_to_listen $PHP_PORT
+}
+
+function start_mysql() {
+  install_if_missing core/busybox-static netstat;
+  netstat -an | grep $MYSQL_PORT | grep LISTEN >/dev/null 2>/dev/null
+  if [ $? == 0 ]; then
+    echo "mysql is already running";
+    return;
+  fi
+
+  start_sup
+
+  mkdir -p /hab/user/mysql/config/
+  printf "app_username='username'\n" > /hab/user/mysql/config/user.toml
+  printf "app_password='super_secret'\n" >> /hab/user/mysql/config/user.toml
+  printf "bind='127.0.0.1'\n" >> /hab/user/mysql/config/user.toml
+  printf "local_only=true\n" >> /hab/user/mysql/config/user.toml
+  printf "port=$MYSQL_PORT\n" >> /hab/user/mysql/config/user.toml
+
+  hab start lancewf/mysql
+
+  wait_or_fail_for_port_to_listen $MYSQL_PORT
+}
+
+function start_sup() {
+  hab sup status 2>/dev/null 1>&2
+  [[ $? == 0 ]] && return
+  mkdir -p /hab/sup/default
+  echo "=> Launching the Habitat Supervisor in the background..."
+  hab sup run $* > /hab/sup/default/sup.log &
+  while : ; do
+    hab sup status >/dev/null
+    [[ $? -eq 0 ]] && break || sleep 1
+  done
+}

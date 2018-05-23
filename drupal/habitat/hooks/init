@@ -1,0 +1,35 @@
+#!/bin/bash
+
+exec 2>&1
+
+{{#if bind.database.first.cfg.local_only ~}}
+MYSQL_IP=127.0.0.1
+{{else ~}}
+MYSQL_IP={{bind.database.first.sys.ip}}
+{{/if ~}}
+
+############# Connect to Database #############################
+mysql_ready() {
+    mysqladmin ping -h $MYSQL_IP -u {{bind.database.first.cfg.username}} -p{{bind.database.first.cfg.password}} > /dev/null 2>&1
+}
+
+if !(mysql_ready) then
+     echo "waiting for mysql ..."
+     exit 1
+fi
+
+mysql -h $MYSQL_IP -u {{bind.database.first.cfg.username}} -p{{bind.database.first.cfg.password}} -e "create database IF NOT EXISTS {{cfg.database_name}}"
+
+############# PROJECT SETUP #############################
+echo "Copying source files"
+cp -r {{pkg.path}}/public_html/* {{pkg.svc_data_path}}/.
+
+cp {{pkg.svc_config_path}}/default.settings.php {{pkg.svc_data_path}}/sites/default/settings.php
+
+chmod +x {{pkg.svc_data_path}}
+chown -RL hab:hab {{pkg.svc_data_path}}
+
+############# NGINX SETUP #############################
+mkdir -p {{pkg.svc_var_path}}/nginx
+chown hab:hab {{pkg.svc_var_path}}
+
