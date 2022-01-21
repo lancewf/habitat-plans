@@ -1,0 +1,11 @@
+isten = "127.0.0.1"
+local_only = true
+port = 9000
+daemonize = "no"
+log_level = "notice"
+
+[pm]
+  mode = "ondemand"
+  max_children = 5
+  timeout = "10s"
+  requests = 500
