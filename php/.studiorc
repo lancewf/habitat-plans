@@ -1,0 +1,22 @@
+#!/bin/bash
+
+hab pkg install chef/studio-common >/dev/null
+source "$(hab pkg path chef/studio-common)/bin/studio-common"
+
+install_if_missing core/curl curl
+
+source <(curl -s https://gist.githubusercontent.com/lancewf/3117853c8c5a04c7b01bac737887a30c/raw/375644621d44f2d638a4e3ab9cc2cbfb1b3d41d5/hab_helpers.sh)
+source <(curl -s https://gist.githubusercontent.com/lancewf/584ca17c7b50cfc859e7cf544c1a67e8/raw/5efe2206e31849b1d64295b9176e5db4dd6b0df0/hab_service_helper.sh)
+
+export PORT=9000
+export SERVICE_NAME="php"
+
+echo "Run 'start' to start the service"
+
+function create_config() {
+  create_config_folders
+
+  write_config_file "port = $PORT\n"
+  append_config_file "listen ='127.0.0.1'\n"
+  append_config_file "local_only=true\n"
+}

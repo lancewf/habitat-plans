@@ -1,8 +1,0 @@
-#!/bin/bash
-
-exec 2>&1
-
-
-cp -n {{pkgPathFor "core/php"}}/etc/php-fpm.d/www.conf.default {{pkgPathFor "core/php"}}/etc/php-fpm.d/www.conf
-chmod +x {{pkg.svc_data_path}}
-chown -R hab:hab {{pkg.svc_data_path}} 
